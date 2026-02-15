@@ -1,0 +1,27 @@
+# Regex Pattern Test
+
+Extract using regex with anchors:
+
+<!-- code_snippet_start:sample.py:r/^def greet/:r/^def main/ -->
+
+```python
+def greet(name: str) -> str:
+    """Greet someone by name."""
+    return f"Hello, {name}!"
+
+
+```
+
+<!-- code_snippet_end -->
+
+Extract using regex end-of-line anchor:
+
+<!-- code_snippet_start:sample.c:r/^int main/:r/^\}/ -->
+
+```c
+int main(int argc, char *argv[]) {
+    printf("Hello, World!\n");
+    return 0;
+```
+
+<!-- code_snippet_end -->

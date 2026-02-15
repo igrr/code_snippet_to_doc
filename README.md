@@ -22,6 +22,16 @@ Add HTML comments to your Markdown file indicating which source file and line ra
 <!-- code_snippet_end -->
 ```
 
+**Using regular expressions** (prefix with `r`, end pattern line is exclusive):
+
+```md
+<!-- code_snippet_start:path/to/file.c:r/^int main/:r/^\}/ -->
+
+<!-- code_snippet_end -->
+```
+
+Regex patterns support the full Python `re` syntax, including anchors like `^` (start of line) and `$` (end of line).
+
 Colons inside search patterns must be escaped with `\:`.
 
 File paths are resolved relative to the Markdown file.
