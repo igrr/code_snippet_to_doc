@@ -1,0 +1,13 @@
+# Regex Pattern Test
+
+Extract using regex with anchors:
+
+<!-- code_snippet_start:sample.py:r/^def greet/:r/^def main/ -->
+
+<!-- code_snippet_end -->
+
+Extract using regex end-of-line anchor:
+
+<!-- code_snippet_start:sample.c:r/^int main/:r/^\}/ -->
+
+<!-- code_snippet_end -->

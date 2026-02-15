@@ -19,9 +19,26 @@ def _parse_line_spec(spec: str, lines: t.List[str], start_after: int = 0) -> int
     except ValueError:
         pass
 
-    # Must be a /search/ pattern
+    # Check for regex pattern: r/regex/
+    if spec.startswith("r/") and spec.endswith("/"):
+        pattern = spec[2:-1]
+        pattern = pattern.replace("\\:", ":")
+        try:
+            compiled = re.compile(pattern)
+        except re.error as e:
+            raise ValueError(f"Invalid regular expression in '{spec}': {e}")
+
+        for i, line in enumerate(lines):
+            if i < start_after:
+                continue
+            if compiled.search(line):
+                return i + 1  # 1-based
+
+        raise ValueError(f"Regex pattern {spec} not found in file")
+
+    # Must be a /search/ pattern (glob-style)
     if not spec.startswith("/") or not spec.endswith("/"):
-        raise ValueError(f"Invalid line specification: '{spec}'. Expected a line number or /search/ pattern.")
+        raise ValueError(f"Invalid line specification: '{spec}'. Expected a line number, /glob/ pattern, or r/regex/ pattern.")
 
     pattern = spec[1:-1]
     # Unescape colons
