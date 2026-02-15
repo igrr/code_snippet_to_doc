@@ -1,0 +1,13 @@
+Outdated snippet:
+
+<!-- code_snippet_start:sample.c:4:8 -->
+
+```c
+int main() {
+    printf("Old code\n");
+}
+```
+
+<!-- code_snippet_end -->
+
+End.
