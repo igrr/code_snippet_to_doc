@@ -165,6 +165,15 @@ class TestProcessMarkdown:
         expected = (DATA_DIR / "test5.md.expected").read_text()
         assert out_md.getvalue() == expected
 
+    def test_inclusive_end_line(self):
+        """Test snippet extraction with '+' suffix for inclusive end line."""
+        out_md = io.StringIO()
+        with open(DATA_DIR / "test6.md.in") as in_md:
+            process_markdown(in_md, out_md)
+
+        expected = (DATA_DIR / "test6.md.expected").read_text()
+        assert out_md.getvalue() == expected
+
     def test_snippet_inside_fenced_block_is_ignored(self):
         """Test that snippet comments inside fenced code blocks are not processed."""
         input_text = (

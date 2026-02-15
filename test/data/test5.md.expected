@@ -16,12 +16,13 @@ def greet(name: str) -> str:
 
 Extract using regex end-of-line anchor:
 
-<!-- code_snippet_start:sample.c:r/^int main/:r/^\}/ -->
+<!-- code_snippet_start:sample.c:r/^int main/:r/^\}/+ -->
 
 ```c
 int main(int argc, char *argv[]) {
     printf("Hello, World!\n");
     return 0;
+}
 ```
 
 <!-- code_snippet_end -->

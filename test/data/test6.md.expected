@@ -1,0 +1,39 @@
+Extract complete function with inclusive end:
+
+<!-- code_snippet_start:sample.c:r/^int main/:r/^\}/+ -->
+
+```c
+int main(int argc, char *argv[]) {
+    printf("Hello, World!\n");
+    return 0;
+}
+```
+
+<!-- code_snippet_end -->
+
+Extract with glob pattern and inclusive end:
+
+<!-- code_snippet_start:repeated_pattern.c:/second_function/:/}/+ -->
+
+```c
+void second_function(void) {
+    int x = 2;
+}
+```
+
+<!-- code_snippet_end -->
+
+Extract with line number and inclusive end:
+
+<!-- code_snippet_start:sample.c:4:7+ -->
+
+```c
+int main(int argc, char *argv[]) {
+    printf("Hello, World!\n");
+    return 0;
+}
+```
+
+<!-- code_snippet_end -->
+
+Done.

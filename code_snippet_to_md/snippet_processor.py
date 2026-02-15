@@ -163,10 +163,19 @@ def process_markdown(in_markdown: t.TextIO, out_markdown: t.TextIO) -> None:
                     source_lines = f.readlines()
 
                 start_line = _parse_line_spec(start_spec, source_lines)
+
+                # A '+' suffix on the end spec makes the end line inclusive
+                end_inclusive = end_spec.endswith("/+") or end_spec.endswith("+")
+                if end_inclusive:
+                    end_spec = end_spec[:-1]  # strip the '+'
+
                 end_line = _parse_line_spec(end_spec, source_lines, start_after=start_line)
 
-                # end line is exclusive
-                snippet_lines = source_lines[start_line - 1 : end_line - 1]
+                # end line is exclusive by default; '+' suffix makes it inclusive
+                if end_inclusive:
+                    snippet_lines = source_lines[start_line - 1 : end_line]
+                else:
+                    snippet_lines = source_lines[start_line - 1 : end_line - 1]
 
                 lang = _detect_language(resolved_path)
                 out_markdown.write(f"\n```{lang}\n")
