@@ -1,0 +1,14 @@
+RST Document
+=============
+
+.. code_snippet_start:sample.py:/def greet/:/def main/
+
+.. code_snippet_end
+
+Some more text.
+
+.. code_snippet_start:sample.py:/def main/:/if __name__/
+
+.. code_snippet_end
+
+End of document.

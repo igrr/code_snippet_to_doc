@@ -1,0 +1,13 @@
+Outdated snippet:
+
+.. code_snippet_start:sample.c:r/^int main/:r/^\}/+
+
+.. code-block:: c
+
+   int main() {
+       printf("Old code\n");
+   }
+
+.. code_snippet_end
+
+End.

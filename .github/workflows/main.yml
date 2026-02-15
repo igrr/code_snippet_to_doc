@@ -55,7 +55,7 @@ jobs:
         python3 -m venv venv
         . venv/bin/activate
         pip install dist/*.whl
-        code_snippet_to_md --version
+        code_snippet_to_doc --version
 
   upload_wheels:
     if: github.event_name == 'push' && github.ref_type == 'tag'

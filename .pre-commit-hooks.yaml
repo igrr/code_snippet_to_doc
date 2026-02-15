@@ -1,8 +1,8 @@
--   id: code_snippet_to_md
-    name: Code Snippet to Markdown
-    description: Keeps code snippets in Markdown files in sync with source code files.
-    entry: code_snippet_to_md
+-   id: code_snippet_to_doc
+    name: Code Snippet to Doc
+    description: Keeps code snippets in Markdown and RST files in sync with source code files.
+    entry: code_snippet_to_doc
     pass_filenames: false
     language: python
-    types_or: [markdown, python, c, c++, java, rust]
+    types_or: [markdown, rst, python, c, c++, java, rust]
     args: [--input=README.md]

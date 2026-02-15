@@ -1,0 +1,32 @@
+RST Document
+=============
+
+.. code_snippet_start:sample.py:/def greet/:/def main/
+
+.. code-block:: python
+
+   def greet(name: str) -> str:
+       """Greet someone by name."""
+       return f"Hello, {name}!"
+
+
+
+.. code_snippet_end
+
+Some more text.
+
+.. code_snippet_start:sample.py:/def main/:/if __name__/
+
+.. code-block:: python
+
+   def main():
+       if len(sys.argv) > 1:
+           print(greet(sys.argv[1]))
+       else:
+           print(greet("World"))
+
+
+
+.. code_snippet_end
+
+End of document.
