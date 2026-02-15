@@ -6,7 +6,7 @@
 
 Add HTML comments to your Markdown file indicating which source file and line range to include:
 
-**Using line numbers** (end line is exclusive):
+**Using line numbers:**
 
 ```md
 <!-- code_snippet_start:path/to/file.c:10:20 -->
@@ -14,7 +14,7 @@ Add HTML comments to your Markdown file indicating which source file and line ra
 <!-- code_snippet_end -->
 ```
 
-**Using search patterns** (glob-style, end pattern line is exclusive):
+**Using search patterns** (glob-style):
 
 ```md
 <!-- code_snippet_start:path/to/file.c:/int main/:/return/ -->
@@ -22,7 +22,7 @@ Add HTML comments to your Markdown file indicating which source file and line ra
 <!-- code_snippet_end -->
 ```
 
-**Using regular expressions** (prefix with `r`, end pattern line is exclusive):
+**Using regular expressions** (prefix with `r`):
 
 ```md
 <!-- code_snippet_start:path/to/file.c:r/^int main/:r/^\}/ -->
@@ -31,6 +31,16 @@ Add HTML comments to your Markdown file indicating which source file and line ra
 ```
 
 Regex patterns support the full Python `re` syntax, including anchors like `^` (start of line) and `$` (end of line).
+
+**Including or excluding the end line** — by default, the end line is excluded from the snippet. Add a `+` suffix to include it:
+
+```md
+<!-- code_snippet_start:path/to/file.c:r/^int main/:r/^\}/+ -->
+
+<!-- code_snippet_end -->
+```
+
+The `+` suffix works with all end line specification types: line numbers, glob patterns, and regular expressions. It is convenient for extracting complete blocks like C function bodies, where the closing `}` should be included.
 
 Colons inside search patterns must be escaped with `\:`.
 
@@ -98,7 +108,7 @@ Options:
 
 Given a source file `example.c`:
 
-<!-- code_snippet_start:test/data/sample.c:1:8 -->
+<!-- code_snippet_start:test/data/sample.c:r/^#include/:r/^\}/+ -->
 
 ```c
 #include <stdio.h>
@@ -115,12 +125,12 @@ int main(int argc, char *argv[]) {
 And a Markdown file containing:
 
 ```md
-<!-- code_snippet_start:example.c:4:8 -->
+<!-- code_snippet_start:example.c:r/^int main/:r/^\}/+ -->
 
 <!-- code_snippet_end -->
 ```
 
-Running `code_snippet_to_md -i README.md` will populate the snippet block with lines 4-7 of `example.c`.
+Running `code_snippet_to_md -i README.md` will populate the snippet block with the `main` function body from `example.c`.
 
 ## License
 

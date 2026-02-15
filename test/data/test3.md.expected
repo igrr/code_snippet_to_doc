@@ -1,6 +1,6 @@
 Outdated snippet:
 
-<!-- code_snippet_start:sample.c:4:8 -->
+<!-- code_snippet_start:sample.c:r/^int main/:r/^\}/+ -->
 
 ```c
 int main(int argc, char *argv[]) {

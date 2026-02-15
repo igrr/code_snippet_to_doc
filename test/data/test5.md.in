@@ -8,6 +8,6 @@ Extract using regex with anchors:
 
 Extract using regex end-of-line anchor:
 
-<!-- code_snippet_start:sample.c:r/^int main/:r/^\}/ -->
+<!-- code_snippet_start:sample.c:r/^int main/:r/^\}/+ -->
 
 <!-- code_snippet_end -->
