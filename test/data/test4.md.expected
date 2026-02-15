@@ -1,0 +1,14 @@
+Extract second function:
+
+<!-- code_snippet_start:repeated_pattern.c:/second_function/:/void / -->
+
+```c
+void second_function(void) {
+    int x = 2;
+}
+
+```
+
+<!-- code_snippet_end -->
+
+Done.

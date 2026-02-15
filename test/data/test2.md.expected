@@ -1,0 +1,33 @@
+## Example
+
+Here is a function:
+
+<!-- code_snippet_start:sample.py:/def greet/:/def main/ -->
+
+```python
+def greet(name: str) -> str:
+    """Greet someone by name."""
+    return f"Hello, {name}!"
+
+
+```
+
+<!-- code_snippet_end -->
+
+And here is the main:
+
+<!-- code_snippet_start:sample.py:/def main/:/if __name__/ -->
+
+```python
+def main():
+    if len(sys.argv) > 1:
+        print(greet(sys.argv[1]))
+    else:
+        print(greet("World"))
+
+
+```
+
+<!-- code_snippet_end -->
+
+That's all.

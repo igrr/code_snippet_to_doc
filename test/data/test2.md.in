@@ -1,0 +1,15 @@
+## Example
+
+Here is a function:
+
+<!-- code_snippet_start:sample.py:/def greet/:/def main/ -->
+
+<!-- code_snippet_end -->
+
+And here is the main:
+
+<!-- code_snippet_start:sample.py:/def main/:/if __name__/ -->
+
+<!-- code_snippet_end -->
+
+That's all.
