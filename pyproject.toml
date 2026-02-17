@@ -70,4 +70,4 @@ code_snippet_to_doc = "code_snippet_to_doc.__main__:main"
     annotated_tag = true
     update_changelog_on_bump = true
     bump_message = "change: release v$new_version"
-    version_files = ["README.md"]
+    version_files = ["README.md:rev: v"]
