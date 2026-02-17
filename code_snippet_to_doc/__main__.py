@@ -61,9 +61,7 @@ def main() -> None:
         if in_file_str != out_file_str:
             if args.check:
                 print(f"Changes required in {in_file.name}:", file=sys.stderr)
-                for line in difflib.unified_diff(
-                    in_file_str.splitlines(), out_file_str.splitlines(), lineterm=""
-                ):
+                for line in difflib.unified_diff(in_file_str.splitlines(), out_file_str.splitlines(), lineterm=""):
                     print(line, file=sys.stderr)
                 changes_required = True
             else:

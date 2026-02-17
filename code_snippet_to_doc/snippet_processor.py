@@ -38,7 +38,9 @@ def _parse_line_spec(spec: str, lines: t.List[str], start_after: int = 0) -> int
 
     # Must be a /search/ pattern (glob-style)
     if not spec.startswith("/") or not spec.endswith("/"):
-        raise ValueError(f"Invalid line specification: '{spec}'. Expected a line number, /glob/ pattern, or r/regex/ pattern.")
+        raise ValueError(
+            f"Invalid line specification: '{spec}'. " "Expected a line number, /glob/ pattern, or r/regex/ pattern."
+        )
 
     pattern = spec[1:-1]
     # Unescape colons
@@ -106,13 +108,7 @@ def _resolve_path(snippet_path: str, doc_dir: str) -> str:
 
 
 # Snippet start/end comment patterns, keyed by name
-_SNIPPET_FIELDS_RE = (
-    r"(?P<path>(?:[^:\\]|\\.)+?)"
-    r":"
-    r"(?P<start>(?:[^:\\]|\\.)+?)"
-    r":"
-    r"(?P<end>(?:[^:\\]|\\.)+?)"
-)
+_SNIPPET_FIELDS_RE = r"(?P<path>(?:[^:\\]|\\.)+?)" r":" r"(?P<start>(?:[^:\\]|\\.)+?)" r":" r"(?P<end>(?:[^:\\]|\\.)+?)"
 
 
 class DocFormat:
@@ -154,7 +150,7 @@ class MarkdownFormat(DocFormat):
             elif stripped.startswith(state["fence_marker"]) and stripped.rstrip(state["fence_marker"]) == "":
                 state["in_fenced_block"] = False
             return True
-        return state.get("in_fenced_block", False)
+        return bool(state.get("in_fenced_block", False))
 
 
 class RstFormat(DocFormat):
