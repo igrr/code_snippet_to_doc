@@ -153,7 +153,20 @@ And a Markdown file containing:
 <!-- code_snippet_end -->
 ```
 
-Running `code_snippet_to_doc -i README.md` will populate the snippet block with the `main` function body from `example.c`.
+Running `code_snippet_to_doc -i README.md` will populate the snippet block with the `main` function body from `example.c`:
+
+````md
+<!-- code_snippet_start:example.c:r/^int main/:r/^\}/+ -->
+
+```c
+int main(int argc, char *argv[]) {
+    printf("Hello, World!\n");
+    return 0;
+}
+```
+
+<!-- code_snippet_end -->
+````
 
 ## License
 
