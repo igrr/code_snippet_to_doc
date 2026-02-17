@@ -1,6 +1,6 @@
 # code_snippet_to_doc
 
-![PyPI - Version](https://img.shields.io/pypi/v/code_snippet_to_doc?labelColor=383838)
+![PyPI - Version](https://img.shields.io/pypi/v/code-snippet-to-doc?labelColor=383838)
  [![CI](https://github.com/igrr/code_snippet_to_doc/actions/workflows/main.yml/badge.svg)](https://github.com/igrr/code_snippet_to_doc/actions/workflows/main.yml) ![Python](https://img.shields.io/badge/dynamic/yaml?url=https://raw.githubusercontent.com/igrr/code_snippet_to_doc/main/.github/workflows/main.yml&query=$.jobs['test'].strategy.matrix['python-version']&label=Python&logo=python&color=3366ff&logoColor=ffcc00&labelColor=383838)
 
 `code_snippet_to_doc` keeps code snippets in documentation files in sync with source code. It replaces the content between special comments with the corresponding lines from source files, ensuring that code examples in documentation never go stale. It can be invoked as a pre-commit hook or as a standalone script. Documentation in Markdown and RestructuredText formats is supported.
