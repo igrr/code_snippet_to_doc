@@ -43,4 +43,5 @@ repos:
       - id: code_snippet_to_doc
         name: "Update README.md with code snippets"
         language: python
-        entry: python -m code_snippet_to_doc
+        entry: python -m code_snippet_to_doc --input=README.md
+        pass_filenames: false

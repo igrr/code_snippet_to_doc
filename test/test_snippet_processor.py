@@ -5,7 +5,6 @@ import pytest
 
 from code_snippet_to_doc.snippet_processor import _detect_language, _parse_line_spec, process_markdown, process_rst
 
-
 DATA_DIR = Path(__file__).parent / "data"
 
 
