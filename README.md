@@ -115,36 +115,17 @@ repos:
 
 ## Command-line usage
 
-<!-- code_snippet_start:code_snippet_to_doc/__main__.py:/def get_parser/:/_FORMAT_PROCESSORS/ -->
-
-```python
-def get_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="code_snippet_to_doc")
-    parser.add_argument(
-        "-i",
-        "--input",
-        nargs="+",
-        type=argparse.FileType("r+"),
-        help="Documentation file to update (can be specified multiple times).",
-    )
-    parser.add_argument(
-        "--check",
-        action="store_true",
-        help="Check if the files need to be updated, but don't modify them. "
-        "Non-zero exit code is returned if any file needs to be updated.",
-    )
-    parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
-    return parser
-
-
+<!-- argparse_to_md:code_snippet_to_doc.__main__:get_parser -->
+Usage:
+```
+code_snippet_to_doc [-h] [-i INPUT [INPUT ...]] [--check] [--version]
 ```
 
-<!-- code_snippet_end -->
-
-Options:
-- `-i, --input`: Documentation files to update.
-- `--check`: Check if files need updating without modifying them. Returns exit code 2 if changes are needed.
-- `--version`: Show version.
+Optional arguments:
+- `-i INPUT [INPUT ...]`, `--input INPUT [INPUT ...]`: Documentation file to update (can be specified multiple times).
+- `--check`: Check if the files need to be updated, but don't modify them. Non-zero exit code is returned if any file needs to be updated.
+- `--version`: show program's version number and exit
+<!-- argparse_to_md_end -->
 
 ## Example
 

@@ -38,6 +38,12 @@ repos:
       - id: validate-pyproject
         additional_dependencies: ["validate-pyproject-schema-store[all]==v2024.11.18"]
 
+  - repo: https://github.com/igrr/argparse_to_md.git
+    rev: v0.5.0
+    hooks:
+      - id: argparse_to_md
+        args: [--input=README.md]
+
   - repo: local
     hooks:
       - id: code_snippet_to_doc
