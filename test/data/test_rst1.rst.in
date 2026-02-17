@@ -1,0 +1,7 @@
+Some text before
+
+.. code_snippet_start:sample.c:4:8
+
+.. code_snippet_end
+
+some text after

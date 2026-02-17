@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from code_snippet_to_md.snippet_processor import _detect_language, _parse_line_spec, process_markdown
+from code_snippet_to_doc.snippet_processor import _detect_language, _parse_line_spec, process_markdown, process_rst
 
 
 DATA_DIR = Path(__file__).parent / "data"
@@ -190,6 +190,52 @@ class TestProcessMarkdown:
         assert out_md.getvalue() == input_text
 
 
+class TestProcessRst:
+    def test_rst_line_numbers(self):
+        """Test RST snippet extraction using line numbers."""
+        out_rst = io.StringIO()
+        with open(DATA_DIR / "test_rst1.rst.in") as in_rst:
+            process_rst(in_rst, out_rst)
+
+        expected = (DATA_DIR / "test_rst1.rst.expected").read_text()
+        assert out_rst.getvalue() == expected
+
+    def test_rst_search_patterns(self):
+        """Test RST snippet extraction using /search/ patterns."""
+        out_rst = io.StringIO()
+        with open(DATA_DIR / "test_rst2.rst.in") as in_rst:
+            process_rst(in_rst, out_rst)
+
+        expected = (DATA_DIR / "test_rst2.rst.expected").read_text()
+        assert out_rst.getvalue() == expected
+
+    def test_rst_update_existing(self):
+        """Test that existing (outdated) RST snippets are replaced."""
+        out_rst = io.StringIO()
+        with open(DATA_DIR / "test_rst3.rst.in") as in_rst:
+            process_rst(in_rst, out_rst)
+
+        expected = (DATA_DIR / "test_rst3.rst.expected").read_text()
+        assert out_rst.getvalue() == expected
+
+    def test_rst_no_snippets(self):
+        """Test that RST without snippets passes through unchanged."""
+        input_text = "Title\n=====\n\nSome regular text.\n"
+        in_rst = io.StringIO(input_text)
+        out_rst = io.StringIO()
+        process_rst(in_rst, out_rst)
+        assert out_rst.getvalue() == input_text
+
+    def test_rst_multiple_snippets(self):
+        """Test that multiple RST snippet blocks in one file are all processed."""
+        out_rst = io.StringIO()
+        with open(DATA_DIR / "test_rst2.rst.in") as in_rst:
+            process_rst(in_rst, out_rst)
+
+        result = out_rst.getvalue()
+        assert result.count(".. code-block:: python") == 2
+
+
 class TestCLI:
     def test_check_mode_detects_changes(self):
         """Test that --check returns exit code 2 when changes are needed."""
@@ -200,7 +246,7 @@ class TestCLI:
             [
                 sys.executable,
                 "-m",
-                "code_snippet_to_md",
+                "code_snippet_to_doc",
                 "--check",
                 "-i",
                 str(DATA_DIR / "test1.md.in"),
@@ -220,10 +266,50 @@ class TestCLI:
             [
                 sys.executable,
                 "-m",
-                "code_snippet_to_md",
+                "code_snippet_to_doc",
                 "--check",
                 "-i",
                 str(DATA_DIR / "test1.md.expected"),
+            ],
+            text=True,
+            capture_output=True,
+        )
+        assert result.returncode == 0
+        assert result.stderr == ""
+
+    def test_check_mode_rst_detects_changes(self):
+        """Test that --check returns exit code 2 for RST files needing updates."""
+        import subprocess
+        import sys
+
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "code_snippet_to_doc",
+                "--check",
+                "-i",
+                str(DATA_DIR / "test_rst1.rst.in"),
+            ],
+            text=True,
+            capture_output=True,
+        )
+        assert result.returncode == 2
+        assert "Changes required in" in result.stderr
+
+    def test_check_mode_rst_no_changes(self):
+        """Test that --check returns exit code 0 for up-to-date RST files."""
+        import subprocess
+        import sys
+
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "code_snippet_to_doc",
+                "--check",
+                "-i",
+                str(DATA_DIR / "test_rst1.rst.expected"),
             ],
             text=True,
             capture_output=True,

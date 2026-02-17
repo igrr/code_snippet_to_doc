@@ -6,14 +6,14 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools_scm]
-version_file = "code_snippet_to_md/_version.py"
+version_file = "code_snippet_to_doc/_version.py"
 
 [tool.setuptools.packages.find]
-include = ["code_snippet_to_md"]
+include = ["code_snippet_to_doc"]
 
 [project]
-name = "code_snippet_to_md"
-description = "Pre-commit hook to keep code snippets in Markdown files in sync with source code"
+name = "code_snippet_to_doc"
+description = "Pre-commit hook to keep code snippets in Markdown and RST files in sync with source code"
 readme = {file = "README.md", content-type = "text/markdown"}
 requires-python = ">=3.9"
 license = {file = "LICENSE"}
@@ -30,9 +30,9 @@ classifiers = [
 dynamic = ["version"]
 
 [project.urls]
-homepage = "https://github.com/igrr/code_snippet_to_md"
-repository = "https://github.com/igrr/code_snippet_to_md.git"
-issues = "https://github.com/igrr/code_snippet_to_md/issues"
+homepage = "https://github.com/igrr/code_snippet_to_doc"
+repository = "https://github.com/igrr/code_snippet_to_doc.git"
+issues = "https://github.com/igrr/code_snippet_to_doc/issues"
 
 [project.optional-dependencies]
 dev = [
@@ -42,7 +42,7 @@ dev = [
 ]
 
 [project.scripts]
-code_snippet_to_md = "code_snippet_to_md.__main__:main"
+code_snippet_to_doc = "code_snippet_to_doc.__main__:main"
 
 [tool.black]
     line-length               = 120

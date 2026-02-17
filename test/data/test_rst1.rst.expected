@@ -1,0 +1,14 @@
+Some text before
+
+.. code_snippet_start:sample.c:4:8
+
+.. code-block:: c
+
+   int main(int argc, char *argv[]) {
+       printf("Hello, World!\n");
+       return 0;
+   }
+
+.. code_snippet_end
+
+some text after

@@ -6,5 +6,5 @@ build/
 .venv/
 *.egg
 .pytest_cache/
-code_snippet_to_md/_version.py
+code_snippet_to_doc/_version.py
 test/data/*.actual

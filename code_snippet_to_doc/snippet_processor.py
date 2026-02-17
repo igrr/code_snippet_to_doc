@@ -97,68 +97,115 @@ def _detect_language(file_path: str) -> str:
     return ext_map.get(ext, "")
 
 
-# Match: <!-- code_snippet_start:path/to/file:LINE_OR_SEARCH:LINE_OR_SEARCH -->
-# The path and line specs may contain escaped colons (\:)
-_SNIPPET_START_RE = re.compile(
-    r"<!--\s*code_snippet_start:"
+def _resolve_path(snippet_path: str, doc_dir: str) -> str:
+    """Resolve a snippet file path relative to the document file's directory."""
+    snippet_path = snippet_path.replace("\\:", ":")
+    if os.path.isabs(snippet_path):
+        return snippet_path
+    return os.path.normpath(os.path.join(doc_dir, snippet_path))
+
+
+# Snippet start/end comment patterns, keyed by name
+_SNIPPET_FIELDS_RE = (
     r"(?P<path>(?:[^:\\]|\\.)+?)"
     r":"
     r"(?P<start>(?:[^:\\]|\\.)+?)"
     r":"
     r"(?P<end>(?:[^:\\]|\\.)+?)"
-    r"\s*-->"
 )
-_SNIPPET_END_RE = re.compile(r"<!--\s*code_snippet_end\s*-->")
-_FENCED_CODE_RE = re.compile(r"^(`{3,}|~{3,})")
 
 
-def _resolve_path(snippet_path: str, md_dir: str) -> str:
-    """Resolve a snippet file path relative to the markdown file's directory."""
-    snippet_path = snippet_path.replace("\\:", ":")
-    if os.path.isabs(snippet_path):
-        return snippet_path
-    return os.path.normpath(os.path.join(md_dir, snippet_path))
+class DocFormat:
+    """Base class defining the interface for document format handlers."""
+
+    snippet_start_re: re.Pattern[str]
+    snippet_end_re: re.Pattern[str]
+
+    def write_code_block(self, out: t.TextIO, lang: str, lines: t.List[str]) -> None:
+        raise NotImplementedError
+
+    def is_passthrough_line(self, line: str, state: dict) -> bool:
+        """Check if the line is inside a literal/fenced block where snippet markers should be ignored.
+        May update state. Returns True if the line should be passed through without checking for snippets."""
+        return False
 
 
-def process_markdown(in_markdown: t.TextIO, out_markdown: t.TextIO) -> None:
+class MarkdownFormat(DocFormat):
+    # Match: <!-- code_snippet_start:path/to/file:LINE_OR_SEARCH:LINE_OR_SEARCH -->
+    snippet_start_re = re.compile(r"<!--\s*code_snippet_start:" + _SNIPPET_FIELDS_RE + r"\s*-->")
+    snippet_end_re = re.compile(r"<!--\s*code_snippet_end\s*-->")
+    _fenced_code_re = re.compile(r"^(`{3,}|~{3,})")
+
+    def write_code_block(self, out: t.TextIO, lang: str, lines: t.List[str]) -> None:
+        out.write(f"\n```{lang}\n")
+        for line in lines:
+            out.write(line)
+        if lines and not lines[-1].endswith("\n"):
+            out.write("\n")
+        out.write("```\n\n")
+
+    def is_passthrough_line(self, line: str, state: dict) -> bool:
+        stripped = line.strip()
+        fence_match = self._fenced_code_re.match(stripped)
+        if fence_match:
+            if not state.get("in_fenced_block"):
+                state["in_fenced_block"] = True
+                state["fence_marker"] = fence_match.group(1)[0]  # ` or ~
+            elif stripped.startswith(state["fence_marker"]) and stripped.rstrip(state["fence_marker"]) == "":
+                state["in_fenced_block"] = False
+            return True
+        return state.get("in_fenced_block", False)
+
+
+class RstFormat(DocFormat):
+    # Match: .. code_snippet_start:path/to/file:LINE_OR_SEARCH:LINE_OR_SEARCH
+    snippet_start_re = re.compile(r"\.\.\s+code_snippet_start:" + _SNIPPET_FIELDS_RE + r"\s*$")
+    snippet_end_re = re.compile(r"\.\.\s+code_snippet_end\s*$")
+
+    def write_code_block(self, out: t.TextIO, lang: str, lines: t.List[str]) -> None:
+        out.write(f"\n.. code-block:: {lang}\n\n")
+        for line in lines:
+            if line.strip():
+                out.write("   " + line)
+            else:
+                out.write("\n")
+        if lines and not lines[-1].endswith("\n"):
+            out.write("\n")
+        out.write("\n")
+
+
+_MARKDOWN_FORMAT = MarkdownFormat()
+_RST_FORMAT = RstFormat()
+
+
+def _process_document(in_doc: t.TextIO, out_doc: t.TextIO, fmt: DocFormat) -> None:
     """
-    Process the input markdown file, updating code snippets between
+    Process the input document file, updating code snippets between
     code_snippet_start and code_snippet_end comments.
     """
     in_snippet_block = False
-    in_fenced_block = False
-    fence_marker = ""
+    passthrough_state: dict = {}
 
-    md_dir = "."
-    if hasattr(in_markdown, "name"):
-        md_dir = os.path.dirname(os.path.abspath(in_markdown.name))
+    doc_dir = "."
+    if hasattr(in_doc, "name"):
+        doc_dir = os.path.dirname(os.path.abspath(in_doc.name))
 
-    for line in in_markdown.readlines():
+    for line in in_doc.readlines():
         if not in_snippet_block:
-            out_markdown.write(line)
+            out_doc.write(line)
 
-            # Track fenced code blocks so we don't process snippet comments inside them
+            if fmt.is_passthrough_line(line, passthrough_state):
+                continue
+
             stripped = line.strip()
-            fence_match = _FENCED_CODE_RE.match(stripped)
-            if fence_match:
-                if not in_fenced_block:
-                    in_fenced_block = True
-                    fence_marker = fence_match.group(1)[0]  # ` or ~
-                elif stripped.startswith(fence_marker) and stripped.rstrip(fence_marker) == "":
-                    in_fenced_block = False
-                continue
-
-            if in_fenced_block:
-                continue
-
-            match = _SNIPPET_START_RE.match(stripped)
+            match = fmt.snippet_start_re.match(stripped)
             if match:
                 in_snippet_block = True
                 snippet_path = match.group("path")
                 start_spec = match.group("start")
                 end_spec = match.group("end")
 
-                resolved_path = _resolve_path(snippet_path, md_dir)
+                resolved_path = _resolve_path(snippet_path, doc_dir)
                 with open(resolved_path) as f:
                     source_lines = f.readlines()
 
@@ -178,14 +225,25 @@ def process_markdown(in_markdown: t.TextIO, out_markdown: t.TextIO) -> None:
                     snippet_lines = source_lines[start_line - 1 : end_line - 1]
 
                 lang = _detect_language(resolved_path)
-                out_markdown.write(f"\n```{lang}\n")
-                for snippet_line in snippet_lines:
-                    out_markdown.write(snippet_line)
-                if snippet_lines and not snippet_lines[-1].endswith("\n"):
-                    out_markdown.write("\n")
-                out_markdown.write("```\n\n")
+                fmt.write_code_block(out_doc, lang, snippet_lines)
         else:
-            match = _SNIPPET_END_RE.match(line.strip())
+            match = fmt.snippet_end_re.match(line.strip())
             if match:
                 in_snippet_block = False
-                out_markdown.write(line)
+                out_doc.write(line)
+
+
+def process_markdown(in_markdown: t.TextIO, out_markdown: t.TextIO) -> None:
+    """
+    Process the input markdown file, updating code snippets between
+    code_snippet_start and code_snippet_end comments.
+    """
+    _process_document(in_markdown, out_markdown, _MARKDOWN_FORMAT)
+
+
+def process_rst(in_rst: t.TextIO, out_rst: t.TextIO) -> None:
+    """
+    Process the input RST file, updating code snippets between
+    code_snippet_start and code_snippet_end comments.
+    """
+    _process_document(in_rst, out_rst, _RST_FORMAT)

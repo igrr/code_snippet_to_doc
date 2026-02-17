@@ -40,7 +40,7 @@ repos:
 
   - repo: local
     hooks:
-      - id: code_snippet_to_md
+      - id: code_snippet_to_doc
         name: "Update README.md with code snippets"
         language: python
-        entry: python -m code_snippet_to_md
+        entry: python -m code_snippet_to_doc

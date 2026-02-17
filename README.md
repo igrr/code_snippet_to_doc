@@ -1,8 +1,10 @@
-# code_snippet_to_md
+# code_snippet_to_doc
 
-`code_snippet_to_md` keeps code snippets in Markdown files in sync with source code. It replaces the content between special HTML comments with the corresponding lines from source files, ensuring that code examples in documentation never go stale. It can be invoked as a pre-commit hook or as a standalone script.
+`code_snippet_to_doc` keeps code snippets in documentation files in sync with source code. It replaces the content between special comments with the corresponding lines from source files, ensuring that code examples in documentation never go stale. It can be invoked as a pre-commit hook or as a standalone script. Documentation in Markdown and RestructuredText formats is supported.
 
 ## How it works
+
+### Markdown
 
 Add HTML comments to your Markdown file indicating which source file and line range to include:
 
@@ -44,9 +46,46 @@ The `+` suffix works with all end line specification types: line numbers, glob p
 
 Colons inside search patterns must be escaped with `\:`.
 
-File paths are resolved relative to the Markdown file.
+File paths are resolved relative to the document file.
 
-Then run `code_snippet_to_md` — the area between the comments will be populated with a fenced code block containing the specified source lines. The language for syntax highlighting is detected automatically from the file extension.
+### RestructuredText
+
+Add RST comments to your `.rst` file using the same colon-separated syntax:
+
+**Using line numbers:**
+
+```rst
+.. code_snippet_start:path/to/file.c:10:20
+
+.. code_snippet_end
+```
+
+**Using search patterns and regular expressions:**
+
+```rst
+.. code_snippet_start:path/to/file.c:r/^int main/:r/^\}/+
+
+.. code_snippet_end
+```
+
+The generated output uses RST's `code-block` directive with proper indentation:
+
+```rst
+.. code_snippet_start:path/to/file.c:r/^int main/:r/^\}/+
+
+.. code-block:: c
+
+   int main(int argc, char *argv[]) {
+       printf("Hello, World!\n");
+       return 0;
+   }
+
+.. code_snippet_end
+```
+
+All line specification types (line numbers, glob patterns, regex, `+` suffix) work the same way in both Markdown and RST files. The format is auto-detected from the file extension.
+
+Then run `code_snippet_to_doc` — the area between the comments will be populated with a code block containing the specified source lines. The language for syntax highlighting is detected automatically from the file extension.
 
 ## Usage as a pre-commit hook
 
@@ -54,36 +93,36 @@ Add to your `.pre-commit-config.yaml`:
 
 ```yaml
 repos:
--   repo: https://github.com/igrr/code_snippet_to_md.git
+-   repo: https://github.com/igrr/code_snippet_to_doc.git
     rev: v0.1.0
     hooks:
-    -   id: code_snippet_to_md
+    -   id: code_snippet_to_doc
 ```
 
 To update additional files beyond `README.md`, specify them in `args:`:
 
 ```yaml
 repos:
--   repo: https://github.com/igrr/code_snippet_to_md.git
+-   repo: https://github.com/igrr/code_snippet_to_doc.git
     rev: v0.1.0
     hooks:
-    -   id: code_snippet_to_md
-        args: [--input=README.md, --input=docs/GUIDE.md]
+    -   id: code_snippet_to_doc
+        args: [--input=README.md, --input=docs/GUIDE.md, --input=docs/api.rst]
 ```
 
 ## Command-line usage
 
-<!-- code_snippet_start:code_snippet_to_md/__main__.py:/def get_parser/:/def main/ -->
+<!-- code_snippet_start:code_snippet_to_doc/__main__.py:/def get_parser/:/_FORMAT_PROCESSORS/ -->
 
 ```python
 def get_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="code_snippet_to_md")
+    parser = argparse.ArgumentParser(prog="code_snippet_to_doc")
     parser.add_argument(
         "-i",
         "--input",
         nargs="+",
         type=argparse.FileType("r+"),
-        help="Markdown file to update (can be specified multiple times).",
+        help="Documentation file to update (can be specified multiple times).",
     )
     parser.add_argument(
         "--check",
@@ -100,7 +139,7 @@ def get_parser() -> argparse.ArgumentParser:
 <!-- code_snippet_end -->
 
 Options:
-- `-i, --input`: Markdown files to update.
+- `-i, --input`: Documentation files to update.
 - `--check`: Check if files need updating without modifying them. Returns exit code 2 if changes are needed.
 - `--version`: Show version.
 
@@ -130,7 +169,7 @@ And a Markdown file containing:
 <!-- code_snippet_end -->
 ```
 
-Running `code_snippet_to_md -i README.md` will populate the snippet block with the `main` function body from `example.c`.
+Running `code_snippet_to_doc -i README.md` will populate the snippet block with the `main` function body from `example.c`.
 
 ## License
 
